@@ -4,15 +4,7 @@ import re
 from urllib.parse import urlparse
 import logging
 
-# Set up basic logging configuration
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# your function to parse the event.
-def parse_event(event):
-    pass
-
-parsed_events = []
 
 def parse_log_entry(log_message):
     # Define regex pattern
@@ -37,9 +29,7 @@ def parse_log_entry(log_message):
     else:
         return None
 
-
-# my solution:
-def grab_data(log_group_name,
+def get_log_event_data(log_group_name,
               list_log_stream,
               start_time,
               end_time,
@@ -49,9 +39,6 @@ def grab_data(log_group_name,
 
     Args
     ----
-        aws_region (str): AWS region.
-        aws_access_key_id (str): AWS access key ID.
-        aws_secret_access_key (str): AWS secret access key.
         log_group_name (str): Name of the log group.
         list_log_stream (list): List of log stream names.
         start_time (int): Start time for log event retrieval in milliseconds.
@@ -71,13 +58,7 @@ def grab_data(log_group_name,
    
     rows = []
     next_token = {}
-    
-     # Convert start_time and end_time to milliseconds if provided
-    if start_time:
-        start_time = int(start_time * 1000)
-    if end_time:
-        end_time = int(end_time * 1000)
-        
+            
     while True:
         try:
             response = client.filter_log_events(
@@ -91,7 +72,7 @@ def grab_data(log_group_name,
         except botocore.exceptions.ClientError as ex:
             logger.error(f"ClientError occurred: {ex}")
             return []  # Returning empty list on error
-        except botocore.exceptions.UnauthorizedSSOTokenError:
+        except botocore.exceptions.UnauthorizedSSOTokenError as ex:
             logger.error(f"UnauthorizedSSOTokenError occurred: {ex}")
             return []  # Returning empty list on error
         except Exception as ex:

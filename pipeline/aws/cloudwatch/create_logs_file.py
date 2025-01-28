@@ -1,5 +1,8 @@
 import csv
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 BASE_DIR = os.getcwd()
 
@@ -12,12 +15,11 @@ def save_to_csv(parsed_events, filename="output.csv"):
         filename (str): Name of the CSV file to save the events to.
     """
     if not parsed_events:
-        print("No data to write to CSV.")
+        logger.error("No data to write to CSV.")
         return
 
     # Get the header from the first event (keys of the dictionary)
     fieldnames = parsed_events[0].keys()
-    
     filepath = os.path.join(BASE_DIR, filename)
 
     try:
@@ -31,9 +33,9 @@ def save_to_csv(parsed_events, filename="output.csv"):
             # Write the rows (log events)
             writer.writerows(parsed_events)
 
-        print(f"Data successfully written to {filename}")
-    except FileNotFoundError:
-        print(f"Could not find the {filename} file.\n")
+        logger.info(f"Data successfully written to {filename}")
+    except FileNotFoundError as e:
+        logger.info(f"Could not find the {filename} file.\n")
     except Exception as e:
-        print(f"An error occurred while saving to CSV: {e}")
+        logger.info(f"An error occurred while saving to CSV: {e}")
 
